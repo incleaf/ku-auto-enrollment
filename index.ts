@@ -39,12 +39,17 @@ async function autoEnrollment() {
       });
 
       while (true) {
-        for (let subjectId of targetSubjects) {
-          await page.evaluate(
-            `document.querySelector('[name=strSbjtId]').value = ${subjectId}`
-          );
-          await page.evaluate(`window.actEvent('set')`);
-          await wait(400);
+        try {
+          for (let subjectId of targetSubjects) {
+            await page.evaluate(
+              `document.querySelector('[name=strSbjtId]').value = ${subjectId}`
+            );
+            await page.evaluate(`window.actEvent('set')`);
+            await wait(700);
+          }
+        } catch (e) {
+          await webhook.send(`Server closed: ${e}`);
+          process.exit(-1);
         }
       }
     });
