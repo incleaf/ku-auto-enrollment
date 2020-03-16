@@ -41,9 +41,9 @@ async function autoEnrollment() {
 
     while (true) {
       for (let subjectId of targetSubjects) {
-        const input = await page.waitForSelector("[name=strSbjtId]");
-        await input?.evaluate((e: HTMLInputElement) => (e.value = ""));
-        await input?.type(subjectId);
+        await page.evaluate(
+          `document.querySelector('[name=strSbjtId]').value = ${subjectId}`
+        );
         await page.evaluate(`window.actEvent('set')`);
         await wait(400);
       }
