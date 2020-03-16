@@ -30,10 +30,8 @@ async function autoEnrollment() {
 
     page.on("dialog", async dialog => {
       const message = dialog.message();
-      let count = targetSubjects.length;
-      if (!message.includes("초과") && count < 5) {
+      if (!message.includes("초과")) {
         webhook.send(message);
-        count = count + 1;
       }
       log(message);
       await dialog.dismiss();
