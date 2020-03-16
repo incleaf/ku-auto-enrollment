@@ -41,11 +41,12 @@ async function autoEnrollment() {
       while (true) {
         try {
           for (let subjectId of targetSubjects) {
-            await page.evaluate(
-              `document.querySelector('[name=strSbjtId]').value = ${subjectId}`
-            );
+            const input = await page.waitForSelector("[name=strSbjtId]");
+            await input?.evaluate((e: HTMLInputElement) => (e.value = ""));
+            await wait(100);
+            await input?.type(subjectId);
             await page.evaluate(`window.actEvent('set')`);
-            await wait(700);
+            await wait(500);
           }
         } catch (e) {
           await webhook.send(`Server closed: ${e}`);
