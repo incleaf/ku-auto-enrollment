@@ -31,7 +31,7 @@ async function autoEnrollment() {
 
       page.on("dialog", async dialog => {
         const message = dialog.message();
-        if (!message.includes("초과")) {
+        if (message.includes("성공하였습니다")) {
           webhook.send(message);
         }
         log(message);
@@ -43,7 +43,7 @@ async function autoEnrollment() {
           for (let subjectId of targetSubjects) {
             const input = await page.waitForSelector("[name=strSbjtId]");
             await input?.evaluate((e: HTMLInputElement) => (e.value = ""));
-            await wait(100);
+            await wait(200);
             await input?.type(subjectId);
             await page.evaluate(`window.actEvent('set')`);
           }
