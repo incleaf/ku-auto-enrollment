@@ -15,7 +15,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node index.ts",
-    "background": "pm2 start ts-node -- index.ts"
+    "bg": "pm2 start ts-node -- index.ts; pm2 monit",
+    "stop": "pm2 stop all"
   },
   "repository": {
     "type": "git",
