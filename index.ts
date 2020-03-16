@@ -34,6 +34,7 @@ async function autoEnrollment() {
       if (lastMessage !== undefined && lastMessage !== message) {
         webhook.send(message);
       }
+      log(message);
       lastMessage = message;
       await dialog.dismiss();
     });
@@ -47,6 +48,10 @@ async function autoEnrollment() {
 
 function wait(duration: number) {
   return new Promise(resolve => setTimeout(resolve, duration));
+}
+
+function log(message: string) {
+  console.log(`[${new Date().toLocaleString()}] ${message}`);
 }
 
 declare var window: any;
