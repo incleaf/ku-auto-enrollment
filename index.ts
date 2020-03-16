@@ -1,7 +1,10 @@
 import { chromium, Page } from "playwright";
+import { IncomingWebhook } from "@slack/webhook";
+
 require("dotenv").config();
 
 async function autoEnrollment() {
+  const webhook = new IncomingWebhook(process.env.WEBHOOK_URL);
   const browser = await chromium.launch({
     devtools: process.env.NODE_ENV !== "production"
   });
@@ -24,13 +27,18 @@ async function autoEnrollment() {
       "https://kupis.konkuk.ac.kr/sugang/acd/cour/aply/courLessinApplyReg.jsp"
     );
 
+    let lastMessage: string | undefined = undefined;
+
     page.on("dialog", async dialog => {
-      console.log(dialog.message());
+      const message = dialog.message();
+      if (lastMessage !== undefined && lastMessage !== message) {
+        webhook.send(message);
+      }
+      lastMessage = message;
       await dialog.dismiss();
     });
 
     while (true) {
-      await page.evaluate(() => (window.alert = console.log));
       await page.evaluate(() => window.actBasEvent("1277"));
       await wait(1000);
     }
