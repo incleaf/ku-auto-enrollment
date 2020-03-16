@@ -4,6 +4,7 @@ import { IncomingWebhook } from "@slack/webhook";
 require("dotenv").config();
 
 async function autoEnrollment() {
+  const targetSubjects = process.env.TARGET_SUBJECTS.split(",");
   const webhook = new IncomingWebhook(process.env.WEBHOOK_URL);
   const browser = await chromium.launch({
     devtools: process.env.NODE_ENV !== "production"
@@ -27,21 +28,25 @@ async function autoEnrollment() {
       "https://kupis.konkuk.ac.kr/sugang/acd/cour/aply/courLessinApplyReg.jsp"
     );
 
-    let lastMessage: string | undefined = undefined;
-
     page.on("dialog", async dialog => {
       const message = dialog.message();
-      if (lastMessage !== undefined && lastMessage !== message) {
+      let count = targetSubjects.length;
+      if (!message.includes("초과") && count < 5) {
         webhook.send(message);
+        count = count + 1;
       }
       log(message);
-      lastMessage = message;
       await dialog.dismiss();
     });
 
     while (true) {
-      await page.evaluate(() => window.actBasEvent("1277"));
-      await wait(1000);
+      for (let subjectId of targetSubjects) {
+        const input = await page.waitForSelector("[name=strSbjtId]");
+        await input?.evaluate((e: HTMLInputElement) => (e.value = ""));
+        await input?.type(subjectId);
+        await page.evaluate(`window.actEvent('set')`);
+        await wait(400);
+      }
     }
   });
 }
