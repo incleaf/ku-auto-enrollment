@@ -5,7 +5,7 @@ module.exports = {
       script: "ts-node",
       args: "index.ts",
       autorestart: true,
-      watch: true,
+      watch: false,
       // Delay between restart
       watch_delay: 1000,
       ignore_watch: ["node_modules"],
