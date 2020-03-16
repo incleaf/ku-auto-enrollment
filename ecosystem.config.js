@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "KU Enrollment Macro",
+      name: "API",
       script: "ts-node",
       args: "index.ts",
       autorestart: true,
@@ -16,16 +16,6 @@ module.exports = {
       env_production: {
         NODE_ENV: "production"
       }
-    },
-    {
-      name: "CRON",
-      script: "ts-node",
-      args: "lolDog.ts",
-      instances: 1,
-      exec_mode: "fork",
-      cron_restart: "*/20 * * * *",
-      watch: false,
-      autorestart: false
     }
   ]
 };
