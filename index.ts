@@ -43,10 +43,10 @@ async function autoEnrollment() {
           for (let subjectId of targetSubjects) {
             const input = await page.waitForSelector("[name=strSbjtId]");
             await input?.evaluate((e: HTMLInputElement) => (e.value = ""));
-            await wait(200);
+            await wait(100);
             await input?.type(subjectId);
             await page.evaluate(`window.actEvent('set')`);
-            await wait(400);
+            await wait(200);
           }
         } catch (e) {
           await webhook.send(`Server closed: ${e}`);
