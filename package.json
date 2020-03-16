@@ -1,0 +1,27 @@
+{
+  "name": "ku-auto-enrollment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "playwright": "^0.11.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/incleaf/ku-auto-enrollment.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/incleaf/ku-auto-enrollment/issues"
+  },
+  "homepage": "https://github.com/incleaf/ku-auto-enrollment#readme"
+}
