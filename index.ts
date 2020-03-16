@@ -9,44 +9,49 @@ async function autoEnrollment() {
   const browser = await chromium.launch({
     devtools: process.env.NODE_ENV !== "production"
   });
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  await page.goto("https://kupis.konkuk.ac.kr/sugang/login/loginTop.jsp");
+  try {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto("https://kupis.konkuk.ac.kr/sugang/login/loginTop.jsp");
 
-  const userNameInput = await page.waitForSelector("[name=stdNo]");
-  await userNameInput?.type(process.env.USERNAME!);
+    const userNameInput = await page.waitForSelector("[name=stdNo]");
+    await userNameInput?.type(process.env.USERNAME!);
 
-  const passwordInput = await page.$("[name=pwd]");
-  await passwordInput?.type(process.env.PASSWORD!);
+    const passwordInput = await page.$("[name=pwd]");
+    await passwordInput?.type(process.env.PASSWORD!);
 
-  page.evaluate(() => (window as any).Login());
-  page.on("popup", async (page: Page) => {
-    if (!page.url().includes("/mainFsetNew.jsp")) {
-      return;
-    }
-    await page.goto(
-      "https://kupis.konkuk.ac.kr/sugang/acd/cour/aply/courLessinApplyReg.jsp"
-    );
-
-    page.on("dialog", async dialog => {
-      const message = dialog.message();
-      if (!message.includes("초과")) {
-        webhook.send(message);
+    page.evaluate(() => (window as any).Login());
+    page.on("popup", async (page: Page) => {
+      if (!page.url().includes("/mainFsetNew.jsp")) {
+        return;
       }
-      log(message);
-      await dialog.dismiss();
+      await page.goto(
+        "https://kupis.konkuk.ac.kr/sugang/acd/cour/aply/courLessinApplyReg.jsp"
+      );
+
+      page.on("dialog", async dialog => {
+        const message = dialog.message();
+        if (!message.includes("초과")) {
+          webhook.send(message);
+        }
+        log(message);
+        await dialog.dismiss();
+      });
+
+      while (true) {
+        for (let subjectId of targetSubjects) {
+          await page.evaluate(
+            `document.querySelector('[name=strSbjtId]').value = ${subjectId}`
+          );
+          await page.evaluate(`window.actEvent('set')`);
+          await wait(400);
+        }
+      }
     });
-
-    while (true) {
-      for (let subjectId of targetSubjects) {
-        await page.evaluate(
-          `document.querySelector('[name=strSbjtId]').value = ${subjectId}`
-        );
-        await page.evaluate(`window.actEvent('set')`);
-        await wait(400);
-      }
-    }
-  });
+  } catch (e) {
+    await browser.close();
+    await webhook.send(`Server closed: ${e}`);
+  }
 }
 
 function wait(duration: number) {
